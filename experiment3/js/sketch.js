@@ -1,5 +1,5 @@
 // sketch.js - purpose and description here
-// Author: Your Name
+// Author: Bolan Guan
 // Date:
 
 // Here is how you might set up an OOP p5.js project
@@ -14,6 +14,9 @@ const VALUE2 = 2;
 let myInstance;
 let canvasContainer;
 var centerHorz, centerVert;
+let angle;
+let len = 150; 
+let growthRate = 0.5; 
 
 class MyClass {
     constructor(param1, param2) {
@@ -49,31 +52,40 @@ function setup() {
     resizeScreen();
   });
   resizeScreen();
+  angle = radians(20); 
+  stroke(50, 100, 50); 
 }
 
-// draw() function is called repeatedly, it's the main animation loop
+
 function draw() {
-  background(220);    
-  // call a method on the instance
-  myInstance.myMethod();
-
-  // Set up rotation for the rectangle
-  push(); // Save the current drawing context
-  translate(centerHorz, centerVert); // Move the origin to the rectangle's center
-  rotate(frameCount / 100.0); // Rotate by frameCount to animate the rotation
-  fill(234, 31, 81);
-  noStroke();
-  rect(-125, -125, 250, 250); // Draw the rectangle centered on the new origin
-  pop(); // Restore the original drawing context
-
-  // The text is not affected by the translate and rotate
-  fill(255);
-  textStyle(BOLD);
-  textSize(140);
-  text("p5*", centerHorz - 105, centerVert + 40);
+  background(240); 
+  translate(width / 2, height); 
+  branch(len, 15); 
+  if (len < 300) {
+    len += growthRate; 
+  }
 }
 
-// mousePressed() function is called once after every time a mouse button is pressed
-function mousePressed() {
-    // code to run when mouse is pressed
+function branch(len, weight) {
+
+  strokeWeight(weight);
+
+  line(0, 0, 0, -len); 
+  translate(0, -len); 
+
+  if (len > 5) { 
+
+    for (let i = 0; i < 2; i++) {
+
+      let randomAngle = angle + radians(random(-10, 10)); 
+      push();
+      if (i === 0) {
+        rotate(randomAngle); 
+      } else {
+        rotate(-randomAngle); 
+      }
+      branch(len * 0.7, weight * 0.8); 
+      pop();
+    }
+  }
 }

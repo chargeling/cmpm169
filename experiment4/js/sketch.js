@@ -13,10 +13,6 @@ const VALUE2 = 2;
 // Globals
 let myInstance;
 let canvasContainer;
-var centerHorz, centerVert;
-let angle;
-let len = 150; 
-let growthRate = 0.5; 
 
 class MyClass {
     constructor(param1, param2) {
@@ -28,6 +24,21 @@ class MyClass {
         // code to run when method is called
     }
 }
+
+let img;
+let mosaicSize = 10; // variable
+let mosaicTiles = []; 
+let tilesToShow = []; 
+let tilesToHide = []; 
+let showSpeed = 10; 
+let hideSpeed = 5; 
+let isShowing = true; 
+
+
+function preload() {
+  img = loadImage('img/Capture805.PNG'); 
+}
+
 
 function resizeScreen() {
   centerHorz = canvasContainer.width() / 2; // Adjusted for drawing logic
@@ -52,40 +63,76 @@ function setup() {
     resizeScreen();
   });
   resizeScreen();
-  angle = radians(20); 
-  stroke(50, 100, 50); 
+  for (let y = 0; y < img.height; y += mosaicSize) {
+    for (let x = 0; x < img.width; x += mosaicSize) {
+      let c = getAverageColor(x, y, mosaicSize);
+      mosaicTiles.push({ x, y, color: c, show: false });
+    }
+  }
+
+  tilesToShow = shuffleArray(mosaicTiles.map((_, index) => index));
+  tilesToHide = [...tilesToShow];
 }
 
 
 function draw() {
-  background(240); 
-  translate(width / 2, height); 
-  branch(len, 15); 
-  if (len < 300) {
-    len += growthRate; 
+  background(255);
+
+  if (isShowing) {
+    for (let i = 0; i < showSpeed; i++) {
+      if (tilesToShow.length > 0) {
+        let tileIndex = tilesToShow.pop(); 
+        mosaicTiles[tileIndex].show = true; 
+      } else {
+        isShowing = false;
+        break;
+      }
+    }
+  } else {
+    for (let i = 0; i < hideSpeed; i++) {
+      if (tilesToHide.length > 0) {
+        let tileIndex = tilesToHide.pop(); 
+        mosaicTiles[tileIndex].show = false; 
+      } else {
+        noLoop();
+        break;
+      }
+    }
+  }
+
+  for (let tile of mosaicTiles) {
+    if (tile.show) {
+      fill(tile.color);
+      rect(tile.x, tile.y, mosaicSize, mosaicSize);
+    }
   }
 }
 
-function branch(len, weight) {
+function getAverageColor(x, y, size) {
+  let r = 0, g = 0, b = 0;
+  let count = 0;
 
-  strokeWeight(weight);
-
-  line(0, 0, 0, -len); 
-  translate(0, -len); 
-
-  if (len > 5) { 
-
-    for (let i = 0; i < 2; i++) {
-
-      let randomAngle = angle + radians(random(-10, 10)); 
-      push();
-      if (i === 0) {
-        rotate(randomAngle); 
-      } else {
-        rotate(-randomAngle); 
-      }
-      branch(len * 0.7, weight * 0.8); 
-      pop();
+  for (let i = y; i < y + size && i < img.height; i++) {
+    for (let j = x; j < x + size && j < img.width; j++) {
+      let pixelColor = img.get(j, i);
+      r += red(pixelColor);
+      g += green(pixelColor);
+      b += blue(pixelColor);
+      count++;
     }
   }
+
+  r /= count;
+  g /= count;
+  b /= count;
+
+  return color(r, g, b);
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 }

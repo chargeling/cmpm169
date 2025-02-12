@@ -55,51 +55,61 @@ function setup() {
 function draw() {
   background(30);
   
-  // 设置光照
   pointLight(255, 255, 255, 0, 0, 100);
   ambientLight(100);
   
-  // 旋转雪花
+  // rotate
   rotateX(angle);
   rotateY(angle * 0.4);
   rotateZ(angle * 0.2);
   
-  // 绘制雪花
-  drawSnowflake();
+  draw3D();
   
-  // 更新旋转角度
   angle += 0.01;
 }
 
-function drawSnowflake() {
-  // 设置雪花的材质
+function draw3D() {
+
   fill(200);
   stroke(255);
-  strokeWeight(2);
+  strokeWeight(1);
   
-  // 绘制雪花的主体
+
   for (let i = 0; i < 6; i++) {
     push();
-    rotateZ(TWO_PI / 6 * i);
-    drawArm();
+    rotateZ(TWO_PI / 6 * i); 
+    draw3DArm();
     pop();
   }
 }
 
-function drawArm() {
-  // 绘制雪花的一个臂
-  beginShape();
-  vertex(0, 0, 0);
-  vertex(50, 0, 0);
-  vertex(50, 10, 0);
-  vertex(70, 10, 0);
-  vertex(70, 20, 0);
-  vertex(50, 20, 0);
-  vertex(50, 30, 0);
-  vertex(70, 30, 0);
-  vertex(70, 40, 0);
-  vertex(50, 40, 0);
-  vertex(50, 50, 0);
-  vertex(0, 50, 0);
-  endShape(CLOSE);
+function draw3DArm() {
+
+  push();
+  translate(50, 0, 0); 
+  rotateY(PI / 4); 
+  box(100, 10, 10); 
+  
+  // branch
+  drawBranch(30, -20, 0, 10, 40, 10); 
+  drawBranch(30, 20, 0, 10, 40, 10);  
+  drawBranch(60, -30, 0, 10, 20, 10); 
+  drawBranch(60, 30, 0, 10, 20, 10);  
+  drawBranch(80, -15, 0, 10, 10, 10); 
+  drawBranch(80, 15, 0, 10, 10, 10);  
+  
+  push();
+  translate(100, 0, 0);
+  sphere(8);
+  pop();
+  
+  pop();
+}
+
+function drawBranch(x, y, z, w, h, d) {
+  push();
+  translate(x, y, z);
+  rotateY(PI / 4); 
+  box(w, h, d); 
+  pop();
 }
